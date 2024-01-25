@@ -1,0 +1,242 @@
+<%@ page import="java.util.*" contentType="text/html; charset=utf-8" %>
+<!DOCTYPE HTML>
+<html>
+<head>
+    <title>工具生成器</title>
+    <link rel="stylesheet" href="${resourceUrl}css/element-ui.css">
+    <link rel="stylesheet" type="text/css" href="${resourceUrl}css/main.css">
+    <meta name="viewport" content="initial-scale=1, maximum-scale=1">
+    <link rel="shortcut icon" href="${resourceUrl}images/favicon.ico">
+
+</head>
+<body>
+
+<div id="app">
+    <div class="title">
+        <span>工具生成器</span>
+    </div>
+    <div id="customizedFields" v-if="step == 4">
+        <el-card class="box-card" id="my-box-card">
+            <div slot="header" class="clearfix" @focus="drag">
+                <span>自定义的字段</span>
+            </div>
+            <el-table
+                    :data="form.fields"
+                    style="width: 100%">
+                <el-table-column
+                        type="index"
+                        label="列名"
+                        :index="indexMethod"
+                        width="50">
+                </el-table-column>
+                <el-table-column
+                        prop="name"
+                        label="字段名"
+                        width="180">
+                </el-table-column>
+            </el-table>
+        </el-card>
+    </div>
+    <div id="main">
+        <div id="contents">
+            <el-steps id="mobile-step" :active="step">
+                <el-step title="上传" icon="el-icon-upload"></el-step>
+                <el-step title="数据库" icon="el-icon-folder"></el-step>
+                <el-step title="修改" icon="el-icon-edit"></el-step>
+                <el-step title="公式" icon="el-icon-edit"></el-step>
+                <el-step title="补充" icon="el-icon-edit"></el-step>
+                <el-step title="完成" icon="el-icon-check"></el-step>
+            </el-steps>
+            <el-steps id="pc-step" :active="step" simple>
+                <el-step title="上传" icon="el-icon-upload"></el-step>
+                <el-step title="数据库" icon="el-icon-folder"></el-step>
+                <el-step title="修改" icon="el-icon-edit"></el-step>
+                <el-step title="公式" icon="el-icon-edit"></el-step>
+                <el-step title="补充" icon="el-icon-edit"></el-step>
+                <el-step title="完成" icon="el-icon-check"></el-step>
+            </el-steps>
+            <div id="page">
+               <transition :name="fade">
+                   <div id="upload" v-if="step == 1" key="upload">
+                       <el-upload
+                               class="upload-demo"
+                               drag
+                               action="${actionUrl}&action=upload"
+                               :file-list="fileList"
+                               :on-success="onUpload">
+                           <i class="el-icon-upload"></i>
+                           <div class="el-upload__text">将文件拖到此处，或<em>点击上传</em></div>
+                           <div class="el-upload__tip" slot="tip">请上传csv格式的表格文件</div>
+                           <div class="el-upload__tip" slot="tip"><i style="color: gray;">若不上传文件可直接跳过</i></div>
+                       </el-upload>
+                   </div>
+                   <div id="database" v-else-if="step == 2" key="database">
+                       <%--
+                        options: [{value:'',label:'',children:[同options]}]
+                       --%>
+<%--                       <el-form :model="databaseInfo" class="demo-form-inline" v-if="hasDataBaseInfo == false">--%>
+<%--                           <el-form-item label="账号">--%>
+<%--                               <el-input v-model="databaseInfo.account" placeholder="请输入账号"></el-input>--%>
+<%--                           </el-form-item>--%>
+<%--                           <el-form-item label="密码">--%>
+<%--                               <el-input v-model="databaseInfo.password" placeholder="请输入密码" show-password></el-input>--%>
+<%--                           </el-form-item>--%>
+<%--                           <el-form-item>--%>
+<%--                               <el-button type="primary" @click="connectDatabase">连接</el-button>--%>
+<%--                           </el-form-item>--%>
+<%--                       </el-form>--%>
+                   <div class="block" v-if="hasDataBaseInfo">
+                       <span class="demonstration">数据库名</span>
+                       <el-cascader-panel
+                          v-model="fieldsFromDatabase"
+                          :options="options"
+                          :show-all-levels="false"
+                          :props="props"
+                          @expand-change="handleExpandChange"
+                          @change="handleChange"
+                       ></el-cascader-panel>
+                   </div>
+                   </div>
+                   <div id="edit-field" v-else-if="step == 3" key="edit1">
+                       <el-form :model="form" ref="form" class="fields-form">
+                           <el-form-item
+                                   v-for="(field, index) in form.fields"
+                                   :key="index">
+<%--                               <el-checkbox class="search-checkbox" label="搜索字段" v-model="form.fields[index].search"></el-checkbox>--%>
+                               &nbsp;
+                               <el-input :ref="'field' + index" v-model="form.fields[index].name" placeholder="字段名称"></el-input>
+                               &nbsp;
+                               <el-select v-model="form.fields[index].type" placeholder="字段类型">
+                                   <el-option label="文字" value="text"></el-option>
+                                   <el-option label="数字" value="numeric"></el-option>
+                                   <el-option label="时间" value="timestamp"></el-option>
+                               </el-select>
+                               &nbsp;
+                               <el-button type="danger" size="small" title="删除" @click.prevent="removeHeader(index)" icon="el-icon-delete" circle></el-button>
+                           </el-form-item>
+                       </el-form>
+                       <div>
+                           <el-button size="small" type="primary" @click="addHeader">新增字段</el-button>
+                           <el-button size="small" @click="delEditField">删除表格</el-button>
+                       </div>
+                   </div>
+                   <div id="edit-formula" v-else-if="step == 4" key="edit2">
+                       <div>
+                       <h3>由前面的字段组合而成的新字段</h3>
+                       <h4>第一列为a1,第n列为an,例如：a1/a2</h4>
+                       <el-form ref="formulaForm" :model="formulaForm">
+                           <el-form-item v-for="(item,index) in formulaForm.fields" :key="index">
+                               <el-row type="flex" justify="center">
+                                   <el-col :span="5">
+                                       <el-input v-model="item.name" placeholder="名称"></el-input>
+                                   </el-col>
+                                   <el-col :xs="10" :sm="15" :offset="1">
+                                       <el-input v-model="item.formula" @change="checkFormula(item.formula)" placeholder="公式"></el-input>
+                                   </el-col>
+                                   <el-col :span="2" :offset="1">
+                                       <el-button type="danger" size="small" title="删除" @click.prevent="removeFormula(index)" icon="el-icon-delete" circle></el-button>
+                                   </el-col>
+                               </el-row>
+                           </el-form-item>
+                       </el-form>
+                       <div>
+                           <el-button size="small" type="primary" @click="addFormula">新增字段</el-button>
+                           <el-button size="small" @click="removeAllFormula">删除表格</el-button>
+                       </div>
+                       </div>
+                   </div>
+                   <div id="edit-info" v-else-if="step == 5" key="edit3">
+                       <el-form :model="toolForm" ref="toolForm" class="fields-form" label-width="90px">
+                           <el-form-item label="工具名称" :rules="{required: true, message: '工具名称不能为空', trigger: 'blur'}">
+                               <el-input clearable v-model="toolForm.name" placeholder="输入工具名称"></el-input>
+                           </el-form-item>
+                           <el-form-item label="工具描述" :rules="[{required: true, message: '工具描述不能为空', trigger: 'blur'},{ min: 10, max: 100, message: '长度在 10 到 100 个字符', trigger: 'blur' }]">
+                               <el-input type="textarea"  clearable v-model="toolForm.description" placeholder="输入工具描述"></el-input>
+                           </el-form-item>
+                       </el-form>
+                   </div>
+                   <div id="download" v-else="step == 6" key="down">
+                       <el-form v-show="success" class="fields-form">
+                           <i id="success-icon" class="el-icon-success"></i>
+                           <p id="success-text">生成成功!</p>
+
+                           <el-form-item id="down-btns">
+                               <el-button size="small" type="success"  plain @click="download">下载工具</el-button>
+                               <el-button size="small" type="success" plain @click="downloadSource">下载源码</el-button>
+                               <el-button size="small" type="success" plain @click="downloadSQL">下载数据库脚本</el-button>
+                               <el-button size="small" type="success" plain @click="dialogVisible = true">预览模板</el-button>
+                           </el-form-item>
+                       </el-form>
+                       <el-dialog
+                               title="预览"
+                               :visible.sync="dialogVisible"
+                               width="30%"
+                               :before-close="handleClose">
+                           <div>
+                               <p>PC端的生成的工具模板</p>
+                               <el-image
+                                       style="width: 100px; height: 100px"
+                                       src="${window.g_resourceUrl}resource/images/toolmakerModel-PC.png"
+                                       :preview-src-list="['${window.g_resourceUrl}resource/images/toolmakerModel-PC.png']">
+                               </el-image>
+                           </div>
+                           <div>
+                               <p>移动端的生成的工具模板</p>
+                               <el-image
+                                       style="width: 100px; height: 100px"
+                                       src="${window.g_resourceUrl}resource/images/toolmakerModel-Mobile.png"
+                                       :preview-src-list="['${window.g_resourceUrl}resource/images/toolmakerModel-Mobile.png']">
+                               </el-image>
+                           </div>
+                           <span slot="footer" class="dialog-footer">
+                            <el-button @click="dialogVisible = false">取 消</el-button>
+                            <el-button type="primary" @click="dialogVisible = false">确 定</el-button>
+                          </span>
+                       </el-dialog>
+                   </div>
+               </transition>
+           </div>
+            <div id="step-btn-div" >
+                <transition name="btn-left">
+                    <el-button v-if="step == 1" @click="editExcelHelp">
+                        说明
+                    </el-button>
+                    <el-button v-else @click="--step;fade='left'">
+                        <i class="el-icon-arrow-left"></i>&nbsp;上一步
+                    </el-button>
+                </transition>
+                <transition name="btn-right" mode="out-in">
+                    <el-button v-if="step < 5" type="primary" @click="checkForm" key="next">
+                            {{ step == 1 ? '跳过' : '下一步' }}&nbsp;<i class="el-icon-arrow-right"></i>
+                    </el-button>
+                    <el-button v-if="step == 5" :disabled="buildBtnDisabled" type="primary" @click="makeTool" key="build">
+                        生成工具&nbsp;<i class="el-icon-arrow-right"></i>
+                    </el-button>
+                    <el-button v-if="step == 6" @click="reload">
+                        <i class="el-icon-refresh"></i>&nbsp;重置
+                    </el-button>
+                </transition>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript" src="${resourceUrl}js/jquery-1.8.0.min.js"></script>
+<script type="text/javascript" src="${resourceUrl}js/vue.js"></script>
+<script type="text/javascript" src="${resourceUrl}js/element-ui.js"></script>
+<script type="text/javascript">
+
+    window.g_runToolUrl = '${actionUrl}'; // 数据接口
+    window.g_callToolUrl = '${runToolUrl}'; // 工具调用
+    window.g_forwardUrl = '${forwardUrl}'; // 跳转接口
+    window.g_resourceUrl = '${resourceUrl}'; // 静态资源
+    window.g_userId = '${userID}'; // 当前用户账号
+    window.g_accessToken = '${accessToken}'; // 当前用户的accessToken
+    window.g_bandId = '${bandID}'; // 当前运行的帮区ID
+    window.g_rtParam = '${toolParam}'; // 工具运行参数
+    window.g_clientType = '${clientType}'; // 工具当前的运行平台
+    window.g_thisToolId = '${toolID}'; // 工具的ID
+</script>
+<script type="text/javascript" src="${resourceUrl}js/main.js"></script>
+</body>
+</html>

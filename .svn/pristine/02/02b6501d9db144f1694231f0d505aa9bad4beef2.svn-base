@@ -1,0 +1,77 @@
+package com.fy.tool.toolmaker.core;
+
+import com.fy.tool.toolmaker.vo.ExcelTable;
+import lombok.Data;
+
+import java.util.List;
+
+/**
+ * 工具配置类
+ */
+@Data
+public class ToolConfiguration {
+
+    List<String> searchFields;
+
+    /**
+     * 工具名称
+     */
+    String toolName;
+
+    /**
+     * 工具名称拼音
+     */
+    String pinyinOfToolName;
+    /**
+     * 工具描述
+     */
+    String toolDescription;
+
+    /**
+     * 公司信息
+     */
+    String company;
+
+    /**
+     * 工具包名
+     */
+    String packageName;
+    /**
+     * 工具主类名
+     */
+    String className;
+
+    /**
+     * 工具对应的表
+     */
+    DbTable table;
+
+    List<DbTable> tables;
+
+    List<ExcelTable> excelTables;
+
+    /**
+     * 非视图工具
+     */
+    Boolean nViewTool;
+
+    /**
+     * 导入功能
+     */
+    Boolean hasImport;
+
+    /**
+     * 导出功能
+     */
+    Boolean  hasExport;
+
+    /**
+     * 添加记录
+     */
+    Boolean hasAdd;
+
+    /**
+     * 操作功能
+     */
+    Boolean hasControl;
+}

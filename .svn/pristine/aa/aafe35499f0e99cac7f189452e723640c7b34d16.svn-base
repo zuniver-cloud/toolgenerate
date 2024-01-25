@@ -1,0 +1,381 @@
+
+html,body ,#app{
+    margin: 0px;
+    height: 100%;
+}
+#app {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    text-align: center;
+    background-color: whitesmoke;
+}
+
+
+.title {
+    height: 69px;
+    line-height: 65px;
+    font-size: 30px;
+    color: white;
+    text-align: left;
+    background-color: deepskyblue;
+    padding: 0px 26px;
+    box-shadow: 0px 2px 6px -3px #47d1ff;
+    display: flex;
+    align-items: center;
+}
+.title>span{
+    margin-right: auto;
+}
+.title>.description{
+    font-size: 15px;
+}
+
+.el-header, .el-footer {
+    background-color: #B3C0D1;
+    color: #333;
+    text-align: center;
+    line-height: 60px;
+}
+
+#main{
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    width: 60%;
+    margin: auto;
+}
+
+
+
+#step{
+    background: white;
+    padding: 15px 30px;
+    border-radius: 15px;
+    box-shadow: 0 2px 9px -4px grey;
+    margin-top: 20px;
+}
+
+#step .el-step{
+    text-align: left;
+}
+
+.is-process{
+    font-weight: 400 !important;
+    color: #c0c4cc !important;
+}
+
+#contents{
+    flex: 1;
+    margin: 15px 0px 15px;
+    border-radius: 7px;
+    box-shadow: 0 1px 2px 0px #b5b5b5;
+    background: white;
+    display: flex;
+    flex-direction: column;
+    padding: 15px 30px;
+}
+
+#page{
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+#step-btn-div{
+    align-self: flex-end;
+    bottom: 41px;
+}
+
+.el-main {
+    background-color: white;
+    color: #333;
+    text-align: center;
+    box-shadow: 0px 2px 7px -2px grey;
+    border-radius: 17px;
+    margin: 10px;
+}
+
+.el-container {
+    margin-bottom: 40px;
+    flex: 1;
+    overflow: auto;
+}
+
+.headers-form {
+    display: flex;
+    flex-direction: column;
+}
+
+.el-form-item {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.el-form-item__content {
+    display: flex;
+}
+
+
+.line{
+    border-bottom: 1px dashed #d6d6d6;
+    margin: 20px 5vh;
+}
+
+h1{
+    margin-top: 0px;
+    text-align: left;
+    font-size: 1.1em;
+    font-weight: 400;
+}
+
+#page>div{
+    position: absolute;
+}
+#edit-field>form{
+    overflow: auto;
+    /*max-height: 570px;*/
+    max-height: 280px;
+    padding: 13px;
+}
+
+.step{
+    padding-bottom: 10px;
+}
+
+.step:last-child{
+    border-bottom: 0px;
+}
+
+.search-checkbox{
+    margin-right: 5px;
+}
+
+.upload-demo *{
+    font-size: 1em !important;
+}
+.upload-demo .el-icon-upload{
+    font-size: 4em !important;
+}
+
+.el-upload-dragger {
+    background-color: #f9feff !important;
+}
+
+
+/*动画*/
+.left-enter-active, .left-leave-active, .right-enter-active, .right-leave-active {
+    transition: all .5s ease;
+}
+.left-enter, .left-leave-to, .right-enter, .right-leave-to {
+    opacity: 0;
+}
+
+.left-enter{
+    transform: translateX(-300px);
+
+}
+
+.left-leave-to{
+    transform: translateX(300px);
+
+}
+
+.right-enter{
+    transform: translateX(300px);
+
+}
+
+.right-leave-to{
+    transform: translateX(-300px);
+
+}
+
+
+.btn-left-enter-active, .btn-left-leave-active, .btn-right-enter-active, .btn-right-leave-active {
+    transition: all .5s ease;
+}
+.btn-left-enter, .btn-left-leave-to, .btn-right-enter, .btn-right-leave-to {
+    opacity: 0;
+}
+
+.btn-left-enter{
+    transform: translateX(-50px);
+
+}
+
+.btn-left-leave-to{
+    transform: translateX(50px);
+
+}
+
+.btn-right-enter{
+    transform: translateX(50px);
+
+}
+
+.btn-right-leave-to{
+    transform: translateX(-50px);
+
+}
+
+#success-icon{
+    font-size: 6em;
+    color: #5bce5b;
+}
+#success-text{
+    color: #5bce5b;
+    font-size: 1.3em;
+}
+
+
+#down-btns{
+    margin-top: 70px;
+}
+
+#edit-field>div{
+    margin-top: 15px;
+}
+
+.el-button--small.is-circle{
+    align-self: center;
+    margin-left: 5px;
+}
+
+/*#my-box-card {*/
+/*    position: absolute;*/
+/*}*/
+
+#customizedFields {
+    position: absolute;
+    opacity: 0.5;
+}
+
+@media (max-width: 768px) {
+    #mobile-step{
+        display: flex;
+        margin: 0px 30px;
+    }
+
+    #mobile-step .el-step{
+        text-align: left;
+    }
+    #mobile-step .el-step__title{
+        line-height: 20px;
+    }
+    #pc-step{
+        display: none;
+    }
+    #main {
+        width: 100%;
+    }
+
+    #contents{
+        margin: 0px;
+        padding: 15px 0px;
+    }
+
+    #step-btn-div{
+        margin-right: 25px;
+    }
+
+    #edit-field>form{
+        /*max-height: 400px;*/
+    }
+
+    .el-message-box{
+        width: 260px !important;
+    }
+
+    .el-upload-dragger{
+        width: 290px;
+    }
+
+    .upload-demo .el-icon-upload {
+        font-size: 3em !important;
+    }
+
+    .el-step__title {
+        font-size: 14px !important;
+    }
+
+    #success-icon {
+        font-size: 5em;
+    }
+    #success-text {
+        font-size: 1.1em;
+    }
+
+    .title {
+        height: 56px;
+        line-height: 56px;
+        font-size: 20px;
+        color: white;
+        text-align: left;
+        padding:0px 10px 0px 10px;
+        background-color: deepskyblue;
+        box-shadow: 0px 2px 8px -3px #47d1ff;
+        top: 0px;
+        width: 100%;
+        right: 0px;
+        box-sizing: border-box;
+        z-index: 1000;
+    }
+
+    .el-container{
+        margin: 0px !important;
+        flex: 1;
+        overflow: auto;
+    }
+
+    .el-main{
+        -webkit-border-radius: 0px;
+        -moz-border-radius: 0px;
+        border-radius: 0px;
+        margin: 0px;
+    }
+
+    .line {
+        margin: 20px 1vh;
+    }
+}
+
+
+@media (min-width: 768px) {
+    #mobile-step{
+        display: none;
+    }
+    #pc-step{
+        display: flex;
+    }
+
+}
+@media (min-width: 1400px) {
+    #edit-field>form{
+        max-height: 500px;
+    }
+}
+
+::-webkit-scrollbar-button {
+    display: none;
+}
+
+::-webkit-scrollbar-thumb {
+    background-color: #b9b9b9;
+    border-radius: 0px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background-color: #87cfff;
+    border-radius: 0px;
+}
+
+::-webkit-scrollbar-track {
+    background-color: #efefef;
+}
+
+::-webkit-scrollbar {
+    width: 4px;
+}

@@ -1,0 +1,17 @@
+package ${package_name}.dao;
+
+import ${package_name}.entity.${class_name};
+import com.fy.toolhelper.db.IBaseDao;
+import com.fy.sqlparam.param.ISqlParameter;
+
+import java.sql.Connection;
+import java.util.List;
+
+public interface I${class_name}Dao extends IBaseDao<${class_name}> {
+
+    List<${class_name}> getAll${class_name}(Connection connection) throws Exception;
+
+    List<${class_name}> getPage(Connection conn, ISqlParameter parameter) throws Exception;
+
+    long getPageCount(Connection conn, ISqlParameter parameter) throws Exception;
+}

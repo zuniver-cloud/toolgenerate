@@ -1,0 +1,399 @@
+let id = 0;
+var vm = new Vue({
+    el: '#app',
+    data: {
+        fieldsFromDatabase: [],
+        hasDataBaseInfo: false,
+        databaseInfo: {
+            account:'',
+            password: '',
+        },
+        props: {
+            multiple: true,
+            emitPath: false,
+            // checkStrictly: true,
+            lazy: true,
+            lazyLoad(node, resolve) {
+                console.log(node);
+                const { level,isLeaf,value,parent } = node;
+                console.log("isLeaf", isLeaf);
+                if(isLeaf) { // 如果已经是叶子节点，不进行下面的步骤
+                    resolve();
+                    return;
+                }
+                var action;
+                var data;
+                var index;
+                if(level == 1) {
+                    action = "getTables";
+                    data = {databaseName: value};
+                    index = "table";
+                } else if(level == 2) {
+                    action = "getTableFields"
+                    data = {databaseName: parent.value,tableName: value}
+                    index = "field"
+                }
+                console.log(action)
+                console.log(data)
+                $.post(window.g_runToolUrl + '&action=' + action, data, function (res) {
+                    console.log(res)
+                    if(res.data && res.data.length > 0) {
+                        const nodes = []
+                        res.data.forEach( val => {
+                            nodes.push({
+                                value: val[index],
+                                label: val[index],
+                                leaf: level >= 2
+                            })
+                        });
+                        console.log("nodes",nodes)
+                        // 通过调用resolve将子节点数据返回，通知组件数据加载完成
+                        resolve(nodes);
+                    } else {
+                        resolve();
+                    }
+                })
+                // setTimeout(() => {
+                //     const nodes = Array.from({ length: level + 1 })
+                //         .map(item => ({
+                //             value: ++id,
+                //             label: `选项${id}`,
+                //             leaf: level >= 2
+                //         }));
+                //     // 通过调用resolve将子节点数据返回，通知组件数据加载完成
+                //     resolve(nodes);
+                // }, 1000);
+            },
+        },
+        options: [],
+        dialogVisible: false,
+        loading: true,
+        fileList: [],
+        form: {
+            fields: [],
+        },
+        toolForm: {
+            name: '',
+            description: '',
+        },
+        formulaForm: {
+            fields: [],
+        },
+        toolNamePinyin: '',
+        success: false,
+        step: 1,
+        fade: 'right',
+        buildBtnDisabled: false
+    },
+    mounted: function () {
+        console.log("hello")
+        this.connectDatabase();
+    },
+    watch: {
+        fieldsFromDatabase: function (newVal, oldVal) {
+            console.log("newVal", newVal);
+            console.log("oldVal", oldVal);
+        }
+    },
+    methods: {
+        handleChange(value) {
+            console.log("handleChange", value)
+        },
+        handleExpandChange(value) {
+            console.log("handleExpandChange",value)
+        },
+        connectDatabase() {
+            var action = "showDataBases";
+            var data = [];
+            var that = this;
+            $.post(window.g_runToolUrl + '&action=' + action, data, function (res) {
+                console.log(res)
+                if(res.data && res.data.length > 0) {
+                    res.data.forEach( val => {
+                        that.options.push({label: val.database, value: val.database});
+                    });
+                    console.log(that.options)
+                    that.hasDataBaseInfo = true;
+                }
+            })
+        },
+        handleClose(done) {
+            done();
+        },
+        indexMethod(index) {
+            return "a"+(index+1);
+        },
+        drag() {
+            console.log("hello")
+        },
+        editExcelHelp() {
+            this.$alert(`
+                <span>上传的csv格式的文件请按照如下格式之一：</span>
+                <ol>
+                   <li><img src="${window.g_resourceUrl}images/model1.png" style="border: 1px solid red;max-width: 200px;"/></li>             
+                   <li><img src="${window.g_resourceUrl}images/model2.png" style="border: 1px solid red;max-width: 200px;" /></li>             
+                </ol>
+                <span><b>注意：文件以UTF-8的格式保存！以防乱码！</b></span>
+            `, '上传Excel表格格式说明', {
+                confirmButtonText: '确定',
+                dangerouslyUseHTMLString: true
+            });
+        },
+        onUpload: function (res, file, fileList) {
+            if (res.code === 200) {
+                for (let i = 0; i < res.data.fields.length; i++) {
+                    var field = res.data.fields[i]
+                    this.form.fields.push({name: field, type: 'text'})
+                }
+                res.data.rows.forEach((val) => {
+                    val.forEach((val2) => {
+                        this.form.fields.push({name: val2, type: 'text'})
+                    })
+                })
+                this.step = 2;
+                this.fade = 'right';
+            } else if (res.code === 201) {
+                this.$message.error(res.data.msg);
+            }
+        },
+        addHeader() {
+            let isIncludeEmpty = this.form.fields.some(field => field.name.trim() == "");
+            console.log(isIncludeEmpty)
+            if (isIncludeEmpty) {
+                this.$message({type: 'warning', message: "请填写已创建的字段！"});
+                return;
+            }
+            this.form.fields.push({name: '', type: 'text'});
+        },
+        removeHeader: function (index) {
+            this.form.fields.splice(index, 1)
+        },
+        addFormula() {
+            let isIncludeEmpty = this.formulaForm.fields.some(field => field.name.trim() == "" || field.formula.trim() == "");
+            console.log(isIncludeEmpty)
+            if (isIncludeEmpty) {
+                this.$message({type: 'warning', message: "请填写已创建的字段！"});
+                return;
+            }
+            if (this.formulaForm.fields.length > 0 && !this.checkFormula()) {
+                return;
+            }
+            this.formulaForm.fields.push({name: '', formula: ''});
+        },
+        removeAllFormula() {
+            if (this.formulaForm.fields.length > 0) {
+                this.$confirm('此操作将删除所有字段，是否继续？', '提示', {
+                    confirmButtonText: '确定',
+                    cancelButtonText: '取消',
+                    type: 'warning'
+                }).then(() => {
+                    this.formulaForm.fields = [];
+                    this.$message({
+                        type: 'success',
+                        message: '删除成功！'
+                    })
+                }).catch(() => {
+                });
+            }
+        },
+        removeFormula(index) {
+            this.formulaForm.fields.splice(index, 1)
+        },
+        makeTool() {
+            if (!this.toolForm.name) {
+                this.$alert('请输入工具名', '警告', {
+                    confirmButtonText: '确定'
+                });
+                return;
+            }
+            if (!this.toolForm.description) {
+                this.$alert('请输入工具描述', '警告', {
+                    confirmButtonText: '确定'
+                });
+                return;
+            }
+            if(!this.toolForm.description.trim().length > 100) {
+                this.$alert('描述字数不可多于100个字符', '警告', {
+                    confirmButtonText: '确定'
+                });
+                return;
+            }
+
+            var that = this;
+
+            // var sfs = [];
+            // for (var i in that.form.fields) {
+            //     if (that.form.fields[i].search) {
+            //         sfs.push(i);
+            //     }
+            // }
+            var data = {
+                fieldNames: JSON.stringify(that.form.fields.map(function (f) {
+                    return f.name
+                })),
+                fieldTypes: JSON.stringify(that.form.fields.map(function (f) {
+                    return f.type
+                })),
+                toolName: this.toolForm.name,
+                toolDescription: this.toolForm.description,
+                // searchFields: JSON.stringify(sfs),
+                formulaNames: JSON.stringify(that.formulaForm.fields.map(function (f) {
+                    return f.name
+                })),
+                formulas: JSON.stringify(that.formulaForm.fields.map(function (f) {
+                    return f.formula;
+                })),
+            };
+            that.postForm('makeTool', data)
+        },
+        postForm: function (action, data) {
+            var that = this;
+            that.buildBtnDisabled = true;
+            $.post(window.g_runToolUrl + '&action=' + action, data, function (res) {
+                that.buildBtnDisabled = false;
+                if (res.code === 200) {
+                    that.toolNamePinyin = res.data.toolName
+                    that.success = true;
+                    that.step++;
+                } else if (res.code > 500) {
+                    that.success = false;
+                    alert(res.message)
+                } else {
+                    that.success = false;
+                    alert('工具生成失败')
+                }
+            })
+        },
+        download: function () {
+            var url = window.g_runToolUrl + '&action=download&toolName=' + this.toolNamePinyin;
+            window.open(url)
+        },
+        downloadSource: function () {
+            var url = window.g_runToolUrl + '&action=downloadSource&toolName=' + this.toolNamePinyin;
+            window.open(url)
+        },
+        downloadSQL: function () {
+            var url = window.g_runToolUrl + '&action=downloadSql&toolName=' + this.toolNamePinyin;
+            window.open(url)
+        },
+        checkForm: function () {
+            this.fade = 'right';
+            if (this.step === 3) {
+                if (this.form.fields.length == 0) {
+                    this.$alert('至少输入一个字段', '警告', {
+                        confirmButtonText: '确定'
+                    });
+                    return;
+                }
+                for (let i in this.form.fields) {
+                    let f = this.form.fields[i];
+                    if (!f.name) {
+                        this.$nextTick(function () {
+                            this.$refs['field' + i][0].$el.querySelector('input').focus()
+                        });
+                        this.$alert('请输入字段名', '警告', {
+                            confirmButtonText: '确定'
+                        });
+                        return;
+                    }
+                }
+                ++vm.step;
+            } else if (this.step === 4) {
+                for (let i in this.formulaForm.fields) {
+                    let f = this.formulaForm.fields[i];
+                    if (!f.name) {
+                        this.$alert('请输入字段名', '警告', {
+                            confirmButtonText: '确定'
+                        });
+                        return;
+                    }
+                    if (!f.formula) {
+                        this.$alert('请输入公式', '警告', {
+                            confirmButtonText: '确定'
+                        });
+                        return;
+                    }
+                    if (!this.checkFormula()) {
+                        return;
+                    }
+                }
+                ++vm.step;
+            } else if (this.step === 2) { // 合并选择的数据库的字段
+                if(this.fieldsFromDatabase.length > 0) {
+                    this.form.fields = this.fieldsFromDatabase.map( item => ({name: item, type: 'text'}))
+                }
+                ++vm.step;
+            }
+            else {
+                ++this.step;
+            }
+        },
+        delEditField() {
+            if (this.form.fields.length > 0) {
+                this.$confirm('此操作将删除所有字段，是否继续？', '提示', {
+                    confirmButtonText: '确定',
+                    cancelButtonText: '取消',
+                    type: 'warning'
+                }).then(() => {
+                    this.form.fields = [];
+                    this.$message({
+                        type: 'success',
+                        message: '删除成功！'
+                    })
+                }).catch(() => {
+                });
+            }
+        },
+        reload() {
+            location.reload();
+        },
+        checkFormula(formula) {
+            // 合法字符：+-*/, {}[](), a1,A1
+            if (formula && formula.match(/[^a\d{}\[\]()+\-*\/]/i)) {
+                this.$message({
+                    message: "请输入合法字符",
+                    type: 'warning'
+                });
+                return false;
+            }
+            var len = 1; // 默认为一
+            if (!formula) { // 如果为空
+                len = this.formulaForm.fields.length;
+            }
+            try {
+                for (let i = 0; i < len; i++) {
+                    if (!formula) { // 如果为空，formula值从第一个开始检查
+                        formula = this.formulaForm.fields[i].formula;
+                    }
+                    // 检查a 和 0-9
+                    var temp;
+                    this.form.fields.forEach((curVal, index) => {
+                        let reg = new RegExp("a" + (index + 1) + "(?!\\w)", "gi");
+                        console.log(reg)
+                        formula = formula.replaceAll(reg, 1);
+                    })
+                    temp = formula;
+                    formula = "";
+                    if (temp.includes("a")) {
+                        this.$message({
+                            message: 'a的下标越界，使用的变量范围是a1~' + "a" + this.form.fields.length,
+                            type: 'warning'
+                        })
+                        return false;
+                    }
+                    // var temp = formula.replaceAll(/a[0-9]+/ig, '1');
+                    console.log(temp)
+                    let eval1 = eval(temp);
+                    console.log(eval1)
+                }
+                return true;
+            } catch (e) {
+                this.$message({
+                    message: '表达式有误，请检查是否出现单个字母a或者数字直接放在了a前',
+                    type: 'warning'
+                })
+                return false;
+            }
+        },
+    },
+})

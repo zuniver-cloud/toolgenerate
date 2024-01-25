@@ -1,0 +1,227 @@
+package com.fy.tool.toolmaker.core;
+
+import com.fy.tool.toolmaker.vo.ExcelTable;
+import freemarker.template.Template;
+import org.apache.commons.io.FileUtils;
+
+import java.io.*;
+import java.nio.charset.StandardCharsets;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Objects;
+
+/**
+ * 工具生成类
+ *
+ * @author wangpeng
+ */
+public class ToolMaker {
+
+    /**
+     * 生成代码输出路径
+     */
+    private String outputPath = ".";
+    /**
+     * 生成后端代码路径
+     */
+    private String srcPath = "./src";
+
+    private String tempResources = "./tempResources";
+
+    /**
+     * 生成前端代码路径
+     */
+    private String webRootPath = "./WebRoot";
+
+    /**
+     * 模板代码路径
+     */
+    private String templatePath;
+
+    private ToolConfiguration toolConfiguration;
+
+    public void setToolConfiguration(ToolConfiguration toolConfiguration) {
+        this.toolConfiguration = toolConfiguration;
+    }
+
+    public void setOutputPath(String outputPath) {
+        this.outputPath = outputPath;
+        this.srcPath = outputPath + File.separator + "src";
+        this.tempResources = outputPath + File.separator + "tempResources";
+        this.webRootPath = outputPath + File.separator + "WebRoot";
+    }
+
+    public void setTemplatePath(String path) {
+        this.templatePath = path;
+    }
+
+    /**
+     * 生成工具
+     * 此方法读取数据库的表、字段信息，依次生成：
+     * <li>实体类 Entity</li>
+     * <li>数据库访问类 Dao</li>
+     * <li>工具动作类 Action</li>
+     * <li>基础前端界面 Main.jsp, Main.js</li>
+     * <li>工具配置文件 config.xml</li>
+     */
+    public void generate() throws Exception {
+
+        if (toolConfiguration == null) {
+            throw new Exception("工具配置为空");
+        } else if (toolConfiguration.getTable() == null) {
+            throw new Exception("数据表不存在");
+        } else if (toolConfiguration.getToolName() == null || toolConfiguration.getToolName().trim().equals("")) {
+            throw new Exception("工具名称不能为空");
+        } else if (toolConfiguration.getClassName() == null || toolConfiguration.getClassName().trim().equals("")) {
+            throw new Exception("工具主类名不能为空");
+        } else if (toolConfiguration.getPackageName() == null) {
+            throw new Exception("包名不能为空");
+        } else if (outputPath == null || outputPath.trim().equals("")) {
+            throw new Exception("输出目录不能为空");
+        }
+
+        copyProjectTemplate();
+        generateEntity();
+        generateDao();
+        generateDaoImpl();
+        generateAction();
+        generateDbSql();
+        generateMainJsp();
+        generateMainJs();
+        generateConfig();
+        generateUtils();
+    }
+
+    private void generateUtils() throws Exception {
+        final String dir2 = srcPath + "/" + toolConfiguration.getPackageName().replaceAll("\\.", "/") + "/utils/";
+        final String path2 = dir2 + "DBUtils.java";
+        final String template2 = "DBUtils.ftl";
+        generateFileByTemplate(template2, path2, null);
+    }
+
+    private void generateEntity() throws Exception {
+
+        final String dir = srcPath + "/" + toolConfiguration.getPackageName().replaceAll("\\.", "/") + "/entity/";
+        final String template = "Entity.ftl";
+
+
+        for (DbTable table : toolConfiguration.getTables()) {
+            final String path = dir + table.getPinyinOfEntityName() + ".java";
+            generateFileByTemplate(template, path, table);
+        }
+
+
+        final String dir2 = srcPath + "/" + toolConfiguration.getPackageName().replaceAll("\\.", "/") + "/entity/";
+        final String path2 = dir2 + "DbColumn.java";
+        final String template2 = "DbColumn.ftl";
+        generateFileByTemplate(template2, path2, null);
+    }
+
+    private void generateDao() throws Exception {
+        final String dir = srcPath + "/" + toolConfiguration.getPackageName().replaceAll("\\.", "/") + "/dao/";
+
+        final String template = "Dao.ftl";
+        for (DbTable table : toolConfiguration.getTables()) {
+            final String path = dir + "I" + table.getPinyinOfEntityName() + "Dao.java";
+            generateFileByTemplate(template, path, table);
+        }
+
+    }
+
+    private void generateDaoImpl() throws Exception {
+        final String dir = srcPath + "/" + toolConfiguration.getPackageName().replaceAll("\\.", "/") + "/dao/impl/";
+
+        final String template = "DaoImpl.ftl";
+        for (DbTable table : toolConfiguration.getTables()) {
+            final String path = dir + table.getPinyinOfEntityName() + "DaoImpl.java";
+            generateFileByTemplate(template, path, table);
+        }
+    }
+
+    private void generateAction() throws Exception {
+        final String dir = srcPath + "/" + toolConfiguration.getPackageName().replaceAll("\\.", "/") + "/action/";
+
+        final String template = "Action.ftl";
+        final String path = dir + toolConfiguration.getClassName() + "Tool.java";
+        generateFileByTemplate(template, path, null);
+    }
+    private void generateDbSql() throws Exception {
+        final String dir = tempResources + File.separator;
+        final String template = "SQL.ftl";
+        final String path = dir + toolConfiguration.getClassName() + ".sql";
+        generateFileByTemplate(template, path, null);
+    }
+
+    private void generateMainJsp() throws Exception {
+        final String dir = webRootPath + "/WEB-INF/pages/";
+        final String path = dir + "main.jsp";
+        final String template = "main.jsp.ftl";
+        generateFileByTemplate(template, path, null);
+    }
+
+    private void generateMainJs() throws Exception {
+        final String dir = webRootPath + "/resource/js/";
+        final String path = dir + "main.js";
+        final String template = "main.js.ftl";
+        generateFileByTemplate(template, path, null);
+    }
+
+    private void generateConfig() throws Exception {
+        final String path = srcPath + "/config.xml";
+        final String template = "config.xml.ftl";
+        generateFileByTemplate(template, path, null);
+
+        generateFileByTemplate("pom.xml.ftl",   outputPath + File.separator  +"./pom.xml", null);
+    }
+
+    private void generateFileByTemplate(
+            final String templateName, String filePath, DbTable table) throws Exception {
+        // create parent dir
+        if (filePath.contains("/")) {
+            String outDir = filePath.substring(0, filePath.lastIndexOf('/'));
+            File dir = new File(outDir);
+            if (!dir.exists()) dir.mkdirs();
+        }
+        // create file
+        FileOutputStream fos = new FileOutputStream(filePath);
+        Writer out = new BufferedWriter(new OutputStreamWriter(fos, StandardCharsets.UTF_8), 10240);
+
+        Map<String, Object> dataMap = new HashMap<>();
+        dataMap.put("tool_name", toolConfiguration.getToolName());
+        dataMap.put("tool_name_pinyin", toolConfiguration.getPinyinOfToolName());
+        dataMap.put("tool_description", toolConfiguration.getToolDescription());
+        dataMap.put("package_name", toolConfiguration.getPackageName());
+        dataMap.put("tool_class_name", toolConfiguration.getClassName());
+        dataMap.put("tables", toolConfiguration.getTables());
+        dataMap.put("searchFields", toolConfiguration.getSearchFields());
+        dataMap.put("n_view_tool", toolConfiguration.getNViewTool());
+        dataMap.put("datetime", new Date().toString());
+        dataMap.put("hasAdd", toolConfiguration.getHasAdd());
+        dataMap.put("hasImport", toolConfiguration.getHasImport());
+        dataMap.put("hasExport", toolConfiguration.getHasExport());
+        dataMap.put("hasControl", toolConfiguration.getHasControl());
+        dataMap.put("company", toolConfiguration.getCompany());
+
+        if (Objects.nonNull(table)){
+            dataMap.put("table_name", table.getName());
+            dataMap.put("columns", table.getColumns());
+            dataMap.put("entityName", table.getPinyinOfEntityName());
+        }
+
+        Template template = FreeMarkerUtil.getTemplate(templatePath, templateName);
+        template.process(dataMap, out);
+        out.close();
+        fos.close();
+    }
+
+    private void copyProjectTemplate() throws IOException {
+        File outputFile = new File(outputPath);
+        if (outputFile.exists()) {
+            FileUtils.deleteDirectory(outputFile);
+        }
+
+        String projectPath = templatePath + "/project";
+        FileUtils.copyDirectory(new File(projectPath), new File(outputPath));
+    }
+}

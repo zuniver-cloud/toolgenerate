@@ -1,0 +1,451 @@
+[v-cloak] {
+    display: none !important;
+}
+
+html,body ,#app{
+    margin: 0px;
+    height: 100%;
+}
+
+#app {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.title {
+    height: 69px;
+    line-height: 65px;
+    font-size: 30px;
+    color: white;
+    text-align: left;
+    background-color: deepskyblue;
+    padding: 0px 26px;
+    box-shadow: 0px 2px 6px -3px #47d1ff;
+    display: flex;
+    align-items: center;
+    position: fixed;
+    top: 0px;
+    width: 100%;
+    z-index: 10;
+}
+.title>span{
+    margin-right: auto;
+}
+
+.title>span.description{
+    font-size: 15px;
+    margin-left: 10px;
+    display: flex;
+    align-items: flex-end;
+    vertical-align: text-bottom;
+}
+
+#title-add-btn,#title-upload-btn,#title-search-btn{
+    background-color: transparent;
+    color: white;
+    border: 0px;
+    float: right;
+    height: 40px;
+    font-size: 1em;
+    width: 40px;
+    text-align: center;
+    outline: none;
+    border-radius: 20px;
+    line-height: 40px;
+}
+
+#title-add-btn:active,#title-upload-btn:active,#title-search-btn:active{
+    background-color: #21b9ec;
+}
+#upload-el{
+    display: flex;
+    align-items: center;
+}
+
+#header .el-upload-list{
+    margin-left: 10px;
+}
+
+#header .el-upload-list__item:first-child{
+    margin: 0px !important;
+}
+
+#content{
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    margin: 10px 10%;
+    padding-top: 57px;
+    height: 100vh;
+    overflow-y: auto;
+}
+
+#header {
+    padding: 10px 0px;
+    text-align: left;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-around;
+    align-items: center;
+    border: 1px solid #efefef;
+    border-radius: 8px;
+    margin: 10px 0px 20px;
+    box-shadow: 0px 2px 8px -7px #5f5f5f;
+    background-color: white;
+}
+.header-cell{
+    background-color: #f9f9f9 !important;
+}
+
+#add-btn{
+    margin: 0px 54px 0px 20px;
+}
+
+.el-header, .el-footer {
+    background-color: #B3C0D1;
+    color: #333;
+    text-align: center;
+    line-height: 60px;
+}
+
+.el-main {
+    background-color: white;
+    color: #333;
+    text-align: center;
+    box-shadow: 0px 2px 8px -6px #5f5f5f;
+    border: 1px solid #efefef;
+    border-radius: 8px;
+    padding-bottom: 5px;
+}
+
+.el-dialog__body{
+    max-height: 70vh;
+    overflow-x: hidden;
+    overflow-y: auto;
+}
+
+body > .el-container {
+    margin-bottom: 40px;
+}
+
+.el-table__body-wrapper{
+    min-height: 400px;
+}
+
+#pagination{
+    margin-top: 12px;
+    margin-bottom: 12px;
+}
+
+@media (max-width: 768px) {
+    .el-container {
+        margin: 0px !important;
+    }
+
+    .title {
+        height: 56px;
+        line-height: 56px;
+        font-size: 20px;
+        color: white;
+        text-align: left;
+        padding:0px 10px 0px 10px;
+        background-color: deepskyblue;
+        box-shadow: 0px 2px 8px -3px #47d1ff;
+        position: fixed;
+        top: 0px;
+        width: 100%;
+        right: 0px;
+        box-sizing: border-box;
+        z-index: 1000;
+    }
+
+    #content{
+        margin: 0px;
+        height: 100%;
+    }
+
+    .el-main{
+        box-shadow: none;
+        border: 0px;
+        border-radius: 0px;
+        padding: 8px;
+        background-color: #f5f5f5;
+    }
+
+    #mobile-import-dialog .el-dialog__body{
+        text-align: center;
+        min-height: 50px;
+    }
+}
+
+
+.demo-table-expand {
+    font-size: 0;
+}
+.demo-table-expand label {
+    width: 180px;
+    color: #5f80ad;
+    text-align: right !important;
+    font-weight: 500;
+    padding-right: 5px;
+}
+.demo-table-expand .el-form-item {
+    margin-right: 0;
+    margin-bottom: 0;
+    width: 90%;
+    border-bottom: 1px dashed #dadada;
+}
+
+.el-table__expand-column .cell{
+    display: none;
+}
+
+.el-table td {
+    cursor: pointer;
+}
+
+td.el-table__expanded-cell {
+    cursor: auto;
+}
+
+
+.el-table__expanded-cell[class*=cell]{
+    box-shadow: inset 0px 5px 10px -9px grey, inset 0px -4px 10px -9px grey;
+}
+
+.msgBox{
+    width: 320px;
+}
+
+#mobile ul{
+    padding: 0px 0px 0px;
+    margin-top: 0px;
+}
+#mobile ul li{
+    list-style: none;
+    min-height: 70px;
+    background-color: white;
+    margin-bottom: 5px;
+    display: flex;
+    flex-direction: column;
+    padding: 5px 0px;
+    border-radius: 5px;
+}
+
+#mobile ul li div{
+    flex: 1;
+    text-align: left;
+    display: flex;
+    align-items: center;
+}
+#mobile ul li div span{
+    padding: 0px 10px;
+}
+
+#mobile ul li div span:last-child{
+    flex: 1;
+}
+
+#mobile-empty{
+    color: #afafaf;
+    font-size: 1.2em;
+    padding: 6px 0px;
+}
+#mobile-empty i{
+    font-size: 4.5em !important;
+    color: #dedede;
+    margin-bottom: 15px !important;
+    margin-top: 90px !important;
+}
+
+#data-end{
+    color: #b6b6b6;
+}
+
+#mobile .primary{
+    font-size: 1.2em;
+    color: #292929;
+}
+
+
+
+.detail-item{
+    padding: 10px;
+    background-color: #f9f9f9;
+    margin-bottom: 13px;
+    border-radius: 5px;
+}
+
+.detail-item p{
+    margin: 0px;
+    color: #424242;
+    font-size: 1.1em;
+}
+
+.detail-item .line{
+    border-top: 1px #dedede dashed;
+    width: 94%;
+    margin: 1px auto 10px;
+}
+
+
+#pc-search-div{
+    display: flex;
+    margin: auto;
+}
+
+#pc-super-search-div {
+    display: flex;
+    margin: 10px;
+}
+
+.slide-fade-enter-active {
+    transition: all .3s ease;
+}
+
+.slide-fade-leave-active {
+    transition: all .3s ease;
+}
+
+.slide-fade-enter, .slide-fade-leave-to
+{
+    transform: translateX(10px);
+    opacity: 0;
+}
+
+#search-div {
+    height: 56px;
+    position: absolute;
+    width: 100%;
+    z-index: 1000;
+    display: flex;
+    background: #2196f3;
+    justify-content: center;
+    top: 0px;
+}
+
+#search-input {
+    flex: 1;
+    align-self: center;
+    background: #42a6f5;
+    border: none;
+    margin: 0px 10px;
+    height: 30px;
+    line-height: 30px;
+    color: white;
+    font-size: 1em;
+    outline: none;
+    padding: 0px 13px;
+    border-radius: 32px;
+}
+
+#search-input::-webkit-input-placeholder { /* WebKit, Blink, Edge */
+    color: #bee2ff;
+}
+
+#search-input:-moz-placeholder { /* Mozilla Firefox 4 to 18 */
+    color: #bee2ff;
+    opacity: 1;
+}
+
+#search-input::-moz-placeholder { /* Mozilla Firefox 19+ */
+    color: #bee2ff;
+    opacity: 1;
+}
+
+#search-input:-ms-input-placeholder { /* Internet Explorer 10-11 */
+    color: #bee2ff;
+}
+
+#search-submit-btn, #search-close-btn {
+    align-self: center;
+    background: #2f9aea;
+    border: none;
+    color: white;
+    width: 30px;
+    height: 30px;
+    border-radius: 21px;
+    margin-right: 8px;
+    outline: none;
+}
+
+#search-submit-btn:active,
+#search-close-btn:active,
+#search-submit-btn:hover,
+#search-close-btn:hover {
+    background: #42a6f5;
+}
+
+
+/*设置IOS页面长按不可复制粘贴，但是IOS上出现input、textarea不能输入，因此将使用-webkit-user-select:auto;*/
+#mobile *,#bottom-dialog *{
+    -webkit-touch-callout:none;  /*系统默认菜单被禁用*/
+    -webkit-user-select:none; /*webkit浏览器*/
+    -khtml-user-select:none; /*早期浏览器*/
+    -moz-user-select:none;/*火狐*/
+    -ms-user-select:none; /*IE10*/
+    user-select:none;
+}
+#mobile  input,textarea {
+    -webkit-user-select:auto; /*webkit浏览器*/
+    margin: 0px;
+    padding: 0px;
+    outline: none;
+}
+#mobile  *,#bottom-dialog *{ -webkit-tap-highlight-color: rgba(0,0,0,0);-webkit-tap-highlight-color: transparent; /* For some Androids */ }
+
+
+#bottom-dialog h3{
+    margin: 0px;
+    color: rgba(0,0,0,.54);
+    font-size: 14px;
+    line-height: 48px;
+    padding-left: 16px;
+    width: 100%;
+    font-weight: 500;
+}
+
+#bottom-dialog .sheet-item{
+    height: 48px;
+    display: -webkit-box;
+    display: -webkit-flex;
+    display: -ms-flexbox;
+    display: flex;
+    -webkit-box-align: center;
+    -webkit-align-items: center;
+    -ms-flex-align: center;
+    align-items: center;
+    padding: 0 16px;
+    color: rgba(0,0,0,.87);
+    font-size: 16px;
+}
+
+#bottom-dialog .sheet-item i{
+    margin-right: 13px;
+}
+
+#bottom-dialog .sheet-item:active{
+    background-color: #dedede;
+}
+
+.el-drawer.btt{
+    outline: none;
+    height: auto !important;
+}
+
+
+#table-el-main{
+    display: flex;
+    flex-direction: column;
+}
+
+#mobile-dialog-footer {
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+}
+
+#mobile-dialog-footer button {
+    margin-top: 10px;
+}

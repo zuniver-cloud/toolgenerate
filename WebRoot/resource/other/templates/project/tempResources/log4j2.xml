@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration status="INFO" name="mainnode" packages="com.fy">
+	<Properties>
+		<Property name="baseDir">${sys:catalina.home}/logs/tool</Property>
+		<Property name="logPattern">%d{yyyy-MM-dd HH:mm:ss,SSS} [%l]-[%p] %m%n</Property>
+		<Property name="sizeRollover">250 MB</Property>
+		<Property name="keepTime">3d</Property>
+	</Properties>
+	<Appenders>
+		<!-- 默认控制台输出 -->
+		<Console name="Console">
+			<PatternLayout pattern="${logPattern}"/>
+		</Console>
+		<!-- 错误日志仅记录错误输出日志 -->
+		<RollingFile name="ErrorRF" fileName="${baseDir}/error.log"
+			filePattern="${baseDir}/error_%d{yyyy-MM-dd}.log">
+			<PatternLayout>
+				<Pattern>${logPattern}</Pattern>
+			</PatternLayout>
+			<Policies>
+				<TimeBasedTriggeringPolicy/>
+				<SizeBasedTriggeringPolicy size="${sizeRollover}"/>
+			</Policies>
+			<DefaultRolloverStrategy>
+				<Delete basePath="${baseDir}/">
+					<IfFileName glob="error_*.log"/>
+					<IfLastModified age="${keepTime}"/>
+				</Delete>
+			</DefaultRolloverStrategy>
+		</RollingFile>
+		<!-- 专门用来记录系统相关日志 -->
+		<RollingFile name="InfoRF" fileName="${baseDir}/info.log"
+			filePattern="${baseDir}/info_%d{yyyy-MM-dd}.log">
+			<PatternLayout>
+				<Pattern>${logPattern}</Pattern>
+			</PatternLayout>
+			<Policies>
+				<TimeBasedTriggeringPolicy/>
+				<SizeBasedTriggeringPolicy size="${sizeRollover}"/>
+			</Policies>
+			<DefaultRolloverStrategy>
+				<Delete basePath="${baseDir}">
+					<IfFileName glob="info_*.log"/>
+					<IfLastModified age="${keepTime}"/>
+				</Delete>
+			</DefaultRolloverStrategy>
+		</RollingFile>
+		<!-- 专门用来记录系统相关日志 -->
+		<RollingFile name="flushRF" fileName="${baseDir}/flush.log"
+			filePattern="${baseDir}/flush_%d{yyyy-MM-dd}.log">
+			<PatternLayout>
+				<Pattern>${logPattern}</Pattern>
+			</PatternLayout>
+			<Policies>
+				<TimeBasedTriggeringPolicy/>
+				<SizeBasedTriggeringPolicy size="${sizeRollover}"/>
+			</Policies>
+			<DefaultRolloverStrategy>
+				<Delete basePath="${baseDir}">
+					<IfFileName glob="flush_*.log"/>
+					<IfLastModified age="${keepTime}"/>
+				</Delete>
+			</DefaultRolloverStrategy>
+		</RollingFile>
+	</Appenders>
+	<Loggers>
+		<!-- 根即默认控制台输出 -->
+		<Root level="INFO">
+			<AppenderRef ref="Console"/>
+		</Root>
+		<!-- 错误日志仅记录错误输出日志 -->
+		<Logger name="errorLog" level="ERROR" additivity="true">
+			<AppenderRef ref="ErrorRF"/>
+			<AppenderRef ref="Console"/>
+		</Logger>
+		<!-- 专门用来记录系统相关日志 -->
+		<Logger name="infoLog" level="INFO" additivity="true">
+			<AppenderRef ref="InfoRF"/>
+		</Logger>
+		<!-- 专门用来记录刷新节点性能数据的日志 -->
+		<Logger name="flushLog" level="DEBUG" additivity="false">
+			<AppenderRef ref="flushRF"/>
+		</Logger>
+	</Loggers>
+</Configuration>

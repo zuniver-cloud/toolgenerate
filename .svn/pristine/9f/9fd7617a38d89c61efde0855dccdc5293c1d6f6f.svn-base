@@ -1,0 +1,13 @@
+DROP TABLE IF EXISTS `${table_name}`;
+CREATE TABLE `${table_name}` (
+<#if columns??>
+  <#list columns as c>
+      <#if c.name == 'id'>
+       `id` int(11) NOT NULL AUTO_INCREMENT,
+      <#else>
+       `${c.name!}` ${c.type!} COMMENT '${c.comment!}',
+      </#if>
+  </#list>
+</#if>
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=utf8;

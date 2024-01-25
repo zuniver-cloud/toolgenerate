@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 通过此配置调用本地开发中的工具，环境会先寻找此配置文件中的工具别名或者工具ID配置，若找到，则使用此配置文件，调用本地开发中的工具，若未找到，则调用开发平者台上的工具 -->
+<config>
+	<!-- 通过工具ID调用工具 -->
+	<callTool>
+		<!-- 工具ID -->
+		<toolID>12345</toolID>
+		<alias>JavaToolDemo3.0</alias>
+		<!-- 被调工具的地址 -->
+		<url>http://localhost:8080/JavaToolDemo3.0</url>
+		<!-- 有无数据库：0、无，1、有 -->
+		<hasDB>1</hasDB>
+	</callTool>
+</config>

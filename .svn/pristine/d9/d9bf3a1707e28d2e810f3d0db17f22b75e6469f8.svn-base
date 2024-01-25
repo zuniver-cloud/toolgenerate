@@ -1,0 +1,41 @@
+package com.fy.tool.toolmaker.core;
+
+import lombok.Data;
+
+import java.util.List;
+
+/**
+ * 工具配置类
+ */
+@Data
+public class ToolConfiguration {
+
+    List<String> searchFields;
+
+    /**
+     * 工具名称
+     */
+    String toolName;
+    /**
+     * 工具描述
+     */
+    String toolDescription;
+    /**
+     * 工具包名
+     */
+    String packageName;
+    /**
+     * 工具主类名
+     */
+    String className;
+
+    /**
+     * 工具对应的表
+     */
+    DbTable table;
+
+    /**
+     * 非视图工具
+     */
+    Boolean nViewTool;
+}
