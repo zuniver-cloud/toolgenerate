@@ -61,7 +61,7 @@
             </el-menu>
         </el-aside>
 
-    <div id="content" :class="{'single-table': menuList.length == 1}">
+    <div id="content" style="height: 120%" :class="{'single-table': menuList.length == 1}">
 <#--        头部操作信息-->
         <div id="header"  v-show="!isMobile">
             <#if n_view_tool>
@@ -74,7 +74,7 @@
                         <div style="background: #e6e7ec;height: 36px;display: flex;align-items: center;padding: 0 10px;">
                             分类展示
                         </div>
-                        <div style="padding: 10px;display: flex;align-items: center;">
+                        <div style="padding: 10px;display: flex;align-items: center;overflow: auto">
                             <template>
                                 <#list classifyList as button>
                                     <div style="margin: 0px 15px">
@@ -87,7 +87,7 @@
                                 </#list>
                             </template>
                             <#if hasAdd>
-                            <div style="flex: 1;text-align: right;padding-right: 10px;">
+                                <div style="margin: 15px;">
                                 <el-button icon="el-icon-plus" type="success" style="margin-right: 10px" @click="handleAdd()">新增记录</el-button>
                             </div>
                             </#if>
@@ -104,13 +104,13 @@
                         <div style="background: #e6e7ec;height: 36px;display: flex;align-items: center;padding: 0 10px;">
                             筛选查询
                         </div>
-                        <div style="padding: 10px;display: flex;align-items: center;">
+                        <div style="padding: 10px;display: flex;align-items: center;overflow: auto">
                             <template>
                                 <#list searchList as item>
                                     <div style="display: flex; flex: 1; margin: 0px 10px;">
                                         <span style="display: flex; margin-left: 7px; vertical-align: center; align-items: center;">${item.searchDes}</span>
 <#--                                        改动2-->
-                                        <el-input v-model="search${item.name}"></el-input>
+                                        <el-input style="width: 100px" v-model="search${item.name}"></el-input>
                                     </div>
                                 </#list>
                             </template>
@@ -123,10 +123,10 @@
                 </#if>
                 </#if>
 <#--                表格操作-->
-                <div style="margin: 5px 0px 0px 20px;background: #FFFFFF;">
+                <div style="display:flex;overflow:auto;background: #FFFFFF;">
                     <#if hasExport>
-                        <el-button type="success" @click="downloadExcelModel">生成Excel空表</el-button>&nbsp;&nbsp;
-                        <el-button type="primary" @click="downloadExcelData">生成Excel表格</el-button>&nbsp;&nbsp;
+                        <el-button style="margin: 0px 15px" type="success" @click="downloadExcelModel">生成Excel空表</el-button>&nbsp;&nbsp;
+                        <el-button style="margin: 0px 15px" type="primary" @click="downloadExcelData">生成Excel表格</el-button>&nbsp;&nbsp;
                     </#if>
                     <#if hasImport>
                         <el-upload
@@ -140,7 +140,7 @@
                                 :limit="1"
                                 :auto-upload="false"
                                 style="display: inline">
-                            <el-button slot="trigger" type="primary">从Excel表添加记录</el-button>
+                            <el-button slot="trigger" type="primary" style="margin: 0px 15px">从Excel表添加记录</el-button>
                             <el-button style="margin-left: 10px;" v-show="showUploadBtn" type="success" @click="submitUpload">开始导入</el-button>
                         </el-upload>
                     </#if>
@@ -207,13 +207,13 @@
 
             <#list tables as t>
                 <el-table v-if="selectTable == '${t.pinyinOfEntityName}'" :data="dataList" tooltip-effect="light" @row-click="clickRow" ref="table" border height="100%"  align="center" v-loading="loading" header-cell-class-name="header-cell">
-                <el-table-column
-                        type="index"
-                        align="center"
-                        label="序号"
-                        width="50"
-                        :index="(page-1)*pageSize+1">
-                </el-table-column>
+<#--                <el-table-column-->
+<#--                        type="index"-->
+<#--                        align="center"-->
+<#--                        label="序号"-->
+<#--                        width="50"-->
+<#--                        :index="(page-1)*pageSize+1">-->
+<#--                </el-table-column>-->
                 <el-table-column type="expand" width="1">
                     <template slot-scope="props">
                         <el-form label-position="left" inline class="demo-table-expand">
@@ -306,7 +306,7 @@
                     </#if>
             </el-table>
             </#list>
-            <div class="company-pager">
+            <div class="company-pager" style="overflow: auto">
 <#--                <span>${company}</span>-->
                 <el-pagination
                         :small="isMobile"

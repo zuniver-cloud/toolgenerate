@@ -239,7 +239,7 @@ public class ToolMaker extends ActionToolBase {
 //    }
 
     @Action
-    //需要另外传一个tables代表数据库的tables，然后转化成dbtables，且 saveToDB不必调用
+    //该部分包含许多旧版本的方法，可根据实际情况修改，也可以不用管
     public Map<String, Object> makeTool(HttpServletRequest request) throws UnsupportedEncodingException {
         HashMap<String, Object> result = new HashMap<>();
         HashMap<String, Object> data = new HashMap<>();
@@ -270,7 +270,7 @@ public class ToolMaker extends ActionToolBase {
 
         String toolInfoStr = RequestUtils.getStringParameter(request, "toolInfo");
         ToolInfo toolInfo = JSONObject.parseObject(toolInfoStr, ToolInfo.class);
-        /*****************************************************stop****************************************/
+        /*******************************stop（以下部分是原来的旧代码，实际没有用，可以根据情况修改）****************************************/
         Boolean remoteCall = RequestUtils.getBooleanParameter(request, "remoteCall");
         List<String> fieldNames;
         if (remoteCall != null && remoteCall) {

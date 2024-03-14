@@ -145,7 +145,7 @@ var v =  new Vue({
         refreshing: false
     },
     mounted: function () {
-        this.isMobile = window.innerWidth <= mobileWidth;
+<#--        this.isMobile = window.innerWidth <= mobileWidth;-->
 
         this.handleCurrentChange(1);
         this.form = this[this.selectTable]
